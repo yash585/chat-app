@@ -21,6 +21,22 @@ const USERS = {
   jane: 'aether',
 };
 
+//for persistence messages
+const messages = [];
+io.on('connection', (socket) => {
+  socket.on('join', (username) => {
+    socket.username = username;
+    socket.emit('load-messages', messages); // Send existing messages to the new user
+    socket.broadcast.emit('user-joined', username);
+  });
+
+  socket.on('send-message', (msg) => {
+    messages.push(msg); // Store message in memory
+    io.emit('receive-message', msg);
+  });
+});
+
+
 // Handle new client connections via Socket.IO
 io.on('connection', (socket) => {
   console.log('a user connected');
