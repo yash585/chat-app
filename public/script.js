@@ -50,7 +50,16 @@ function sendMessage() {
   socket.emit('send-message', msg);  // Send message to the server
   msgInput.value = '';  // Clear the input field
   replyTo = null;  // Reset reply
+  msgInput.focus(); // Focus back on the input field
 }
+
+// Listen for Enter key press to send the message
+document.getElementById('message').addEventListener('keydown', (event) => {
+  if (event.key === 'Enter') {
+    event.preventDefault(); // Prevent default action (line break)
+    sendMessage(); // Call the sendMessage function
+  }
+});
 
 // Receive and display messages from the server
 socket.on('receive-message', (msg) => {
