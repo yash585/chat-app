@@ -24,7 +24,7 @@ const USERS = {
 };
 
 // Connect to MongoDB
-const mongoURI = 'your-mongodb-connection-string'; // Replace with your MongoDB URI
+const mongoURI = 'mongodb+srv://yashchavhan566:Cipher567@bifrost.wp903ar.mongodb.net/?retryWrites=true&w=majority&appName=Bifrost'; // Replace with your MongoDB URI
 mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('Connected to MongoDB'))
   .catch((err) => console.log('Error connecting to MongoDB:', err));
