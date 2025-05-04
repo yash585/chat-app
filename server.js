@@ -21,36 +21,30 @@ const USERS = {
   jane: 'aether',
 };
 
-//for persistence messages
+// For persistence messages
 const messages = [];
-io.on('connection', (socket) => {
-  socket.on('join', (username) => {
-    socket.username = username;
-    socket.emit('load-messages', messages); // Send existing messages to the new user
-    socket.broadcast.emit('user-joined', username);
-  });
 
-  socket.on('send-message', (msg) => {
-    messages.push(msg); // Store message in memory
-    io.emit('receive-message', msg);
-  });
-});
-
-
-// Handle new client connections via Socket.IO
 io.on('connection', (socket) => {
   console.log('a user connected');
-
-  // Join event to assign username to the socket
+  
+  // Handle user joining
   socket.on('join', (username) => {
     socket.username = username;
     console.log(`${username} joined the chat`);
-    socket.broadcast.emit('user-joined', username); // Notify others when a user joins
+    
+    // Send the existing messages to the new user
+    socket.emit('load-messages', messages); 
+    
+    // Notify other users when a user joins
+    socket.broadcast.emit('user-joined', username); 
   });
 
   // Handle sending messages
   socket.on('send-message', (msg) => {
-    io.emit('receive-message', msg); // Broadcast the message to all clients
+    messages.push(msg); // Store message in memory
+    
+    // Broadcast the new message to all users
+    io.emit('receive-message', msg); 
   });
 
   // Handle user disconnection
@@ -63,4 +57,3 @@ io.on('connection', (socket) => {
 server.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
 });
-
