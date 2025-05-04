@@ -2,7 +2,9 @@
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
+const mongoose = require('mongoose');
 const path = require('path');
+const messageService = require('./message'); // Import message service
 
 // Initialize the Express app and HTTP server
 const app = express();
@@ -21,35 +23,41 @@ const USERS = {
   jane: 'aether',
 };
 
-// For persistence messages
-const messages = [];
+// Connect to MongoDB
+const mongoURI = 'your-mongodb-connection-string'; // Replace with your MongoDB URI
+mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log('Connected to MongoDB'))
+  .catch((err) => console.log('Error connecting to MongoDB:', err));
 
+// Handle socket connection
 io.on('connection', (socket) => {
-  console.log('a user connected');
-  
+  console.log('A user connected');
+
   // Handle user joining
-  socket.on('join', (username) => {
+  socket.on('join', async (username) => {
     socket.username = username;
     console.log(`${username} joined the chat`);
     
-    // Send the existing messages to the new user
-    socket.emit('load-messages', messages); 
-    
+    // Fetch and send existing messages from the database to the new user
+    const messages = await messageService.getMessages();
+    socket.emit('load-messages', messages);
+
     // Notify other users when a user joins
-    socket.broadcast.emit('user-joined', username); 
+    socket.broadcast.emit('user-joined', username);
   });
 
   // Handle sending messages
-  socket.on('send-message', (msg) => {
-    messages.push(msg); // Store message in memory
+  socket.on('send-message', async (msg) => {
+    // Save the new message to the database
+    await messageService.saveMessage(msg);
     
     // Broadcast the new message to all users
-    io.emit('receive-message', msg); 
+    io.emit('receive-message', msg);
   });
 
   // Handle user disconnection
   socket.on('disconnect', () => {
-    console.log('a user disconnected');
+    console.log('A user disconnected');
   });
 });
 
