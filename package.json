@@ -1,5 +1,4 @@
 {
-  "start": "node server.js",
   "name": "chat-app",
   "version": "1.0.0",
   "description": "Two-user chat application",
@@ -12,4 +11,3 @@
     "socket.io": "^4.7.2"
   }
 }
-
