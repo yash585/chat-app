@@ -8,23 +8,8 @@ document.getElementById('chat-header').textContent = `Chatting with ${peer}`;
 
 let replyTo = null;
 
-function sendMessage() {
-  const msgInput = document.getElementById('message');
-  const text = msgInput.value;
-  if (!text) return;
-
-  const msg = {
-    user,
-    text,
-    replyTo
-  };
-
-  socket.emit('send-message', msg);
-  msgInput.value = '';
-  replyTo = null;
-}
-
-socket.on('receive-message', (msg) => {
+// This function will handle appending messages to the chat UI
+function displayMessage(msg) {
   const messages = document.getElementById('messages');
   const msgDiv = document.createElement('div');
   msgDiv.classList.add('message');
@@ -48,5 +33,33 @@ socket.on('receive-message', (msg) => {
 
   messages.appendChild(msgDiv);
   messages.scrollTop = messages.scrollHeight;
+}
+
+// This function sends the message to the server
+function sendMessage() {
+  const msgInput = document.getElementById('message');
+  const text = msgInput.value;
+  if (!text) return;
+
+  const msg = {
+    user,
+    text,
+    replyTo
+  };
+
+  socket.emit('send-message', msg);  // Send message to the server
+  msgInput.value = '';  // Clear the input field
+  replyTo = null;  // Reset reply
+}
+
+// Receive and display messages from the server
+socket.on('receive-message', (msg) => {
+  displayMessage(msg);
 });
 
+// When a new user joins, load all existing messages
+socket.on('load-messages', (msgs) => {
+  msgs.forEach((msg) => {
+    displayMessage(msg);
+  });
+});
