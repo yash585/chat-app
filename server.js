@@ -21,7 +21,7 @@ app.use(express.static('public'));
 const USERS = {
   thor: 'pointbreak',
   jane: 'aether',
-  jarvis: 'ironsheart'
+  jarvis: 'ironsheart',
   veronica: 'hulkbuster'
 };
 
