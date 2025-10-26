@@ -21,6 +21,8 @@ app.use(express.static('public'));
 const USERS = {
   thor: 'pointbreak',
   jane: 'aether',
+  jarvis: 'ironsheart'
+  veronica: 'hulkbuster'
 };
 
 // Connect to MongoDB
